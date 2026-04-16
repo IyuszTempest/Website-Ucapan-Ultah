@@ -4,8 +4,166 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HBD Yehezkiel | From Yus</title>
-    <link rel="stylesheet" href="style.css">
+    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Playfair+Display:ital,wght@1,500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- KODE CSS LENGKAP --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #050507; /* Gelap pekat cinematic */
+            color: #e0e0e0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden; /* Mencegah scroll saat intro */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* CONTAINER PARTIKEL (Latar Belakang) */
+        #particles-js {
+            position: absolute;
+            width: 100%; height: 100%;
+            z-index: 1; /* Di belakang konten */
+            background-color: #050507;
+        }
+
+        /* ANIMASI FADE IN UP */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- INTRO OVERLAY (HALAMAN PERTAMA) --- */
+        #overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #050507;
+            z-index: 100; /* Paling depan */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 1s;
+            padding: 20px;
+        }
+
+        .fade-out { opacity: 0; visibility: hidden; }
+
+        /* Teks Intro muncul berurutan */
+        .intro-content > * { opacity: 0; animation: fadeInUp 0.8s ease forwards; }
+        .pre-title { animation-delay: 0.3s; font-size: 0.7rem; letter-spacing: 5px; color: #666; text-transform: uppercase; margin-bottom: 15px; }
+        .target-name { animation-delay: 0.6s; font-family: 'Playfair Display', serif; font-size: 2.8rem; font-style: italic; color: #fff; margin-bottom: 35px; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+        .unlock-btn { animation-delay: 0.9s; }
+
+        /* Tombol Buka Minimalis */
+        .unlock-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 12px 40px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+
+        .unlock-btn:hover {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+            box-shadow: 0 0 20px rgba(255,255,255,0.3);
+        }
+
+        /* --- MAIN CONTAINER (KARTU UCAPAN) --- */
+        .main-container {
+            position: relative;
+            z-index: 10; /* Di atas partikel */
+            display: none; /* Sembunyi di awal */
+            opacity: 0;
+            transform: scale(0.95) translateY(20px);
+            transition: transform 1.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 1.5s ease;
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+        }
+
+        .main-container.show { display: flex; opacity: 1; transform: scale(1) translateY(0); }
+
+        /* Efek Kaca (Glassmorphism) Halus */
+        .glass-card {
+            background: rgba(15, 15, 18, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 45px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            width: 100%;
+            box-shadow: 0 25px 55px rgba(0,0,0,0.5);
+            transition: box-shadow 0.5s ease;
+        }
+        .glass-card:hover { box-shadow: 0 25px 60px rgba(233, 69, 96, 0.15); } /* Aksen warna saat hover */
+
+        /* Bagian Gambar (Kunci Bikin BULET Sempurna) */
+        .image-wrapper { 
+            flex-shrink: 0; 
+            position: relative; 
+            width: 180px;  /* Lebar container */
+            height: 180px; /* Tinggi container (harus sama agar bulet) */
+            border-radius: 50%; /* Bikin container-nya bulet */
+            overflow: hidden; /* Sembunyikan bagian foto yang keluar dari buletan */
+            border: 2px solid rgba(255,255,255,0.1); /* Bingkai tipis */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            transition: 1s ease;
+        }
+        .glass-card:hover .image-wrapper { border-color: #e94560; transform: scale(1.03); } /* Aksen merah saat hover */
+
+        .profile-img {
+            width: 100%; /* Penuhi lebar container */
+            height: 100%; /* Penuhi tinggi container */
+            object-fit: cover; /* Jaga proporsi foto */
+            filter: grayscale(100%); /* Awalnya hitam putih */
+            transition: 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* Foto jadi berwarna saat kartu di-hover */
+        .glass-card:hover .profile-img { filter: grayscale(0%); }
+
+        /* Bagian Teks */
+        .text-content { flex: 1; }
+        .salutation { font-family: 'Playfair Display', serif; font-size: 2rem; font-style: italic; color: #fff; margin-bottom: 10px; font-weight: 500; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
+        .divider { width: 45px; height: 3px; background: #e94560; margin-bottom: 20px; border-radius: 2px; } /* Aksen Merah Gelap */
+        .message { font-size: 0.95rem; line-height: 1.8; color: #ccc; min-height: 100px; font-weight: 300; letter-spacing: 0.5px; }
+        .signature { font-family: 'Playfair Display', serif; font-style: italic; text-align: right; color: #fff; margin-top: 25px; font-size: 1.2rem; opacity: 0.8; }
+
+        /* --- OPTIMASI MOBILE (RESPONSIVE) --- */
+        @media (max-width: 768px) {
+            body { overflow-y: auto; align-items: flex-start; padding-top: 50px; padding-bottom: 30px;}
+            .main-container { padding: 15px; transform: scale(1) translateY(0); } /* Nonaktifkan scale transition di mobile */
+            .glass-card {
+                flex-direction: column; /* Gambar di atas, teks di bawah */
+                padding: 30px 20px;
+                text-align: center;
+                gap: 25px;
+                border-radius: 15px;
+            }
+            .image-wrapper { width: 140px; height: 140px; } /* Ukuran lebih kecil di mobile */
+            .divider { margin: 0 auto 20px; }
+            .signature { text-align: center; margin-top: 30px; }
+            .target-name { font-size: 2.1rem; }
+            .salutation { font-size: 1.6rem; }
+            .message { font-size: 0.9rem; line-height: 1.7; }
+        }
+    </style>
 </head>
 <body>
 
@@ -13,33 +171,96 @@
 
     <div id="overlay">
         <div class="intro-content">
-            <p class="pre-title">Sebuah pesan singkat untuk</p>
+            <p class="pre-title">A special message for</p>
             <h1 class="target-name">Yehezkiel.</h1>
-            <button class="unlock-btn" onclick="startCelebration()">
-                <span class="btn-text">Buka</span>
-                <span class="btn-icon">→</span>
-            </button>
+            <button class="unlock-btn" onclick="startCelebration()">Buka Pesan</button>
         </div>
     </div>
 
     <div class="main-container" id="mainContent">
         <div class="glass-card">
             <div class="image-wrapper">
-                <img src="foto-temen.jpg" alt="Yehezkiel" class="profile-img">
+                <img src="https://i.ibb.co.com/vv1yXwYr/Gemini-Generated-Image-isasggisasggisas-1-1-1.png" alt="Yehezkiel" class="profile-img">
             </div>
-            
             <div class="text-content">
-                <h2 class="salutation">Selamat Ulang Tahun.</h2>
+                <h2 class="salutation">Happy Birthday.</h2>
                 <div class="divider"></div>
-                <p class="message" id="birthdayMessage">
-                    </p>
-                <p class="closing">Selamat berjuang ya, Yel.<br>Demi masa depan yang cerah.</p>
+                <p class="message" id="typewriter"></p>
                 <div class="signature">- Yus -</div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <script src="script.js"></script>
+    
+    <script>
+        // FUNGSI UNTUK MEMULAI (SETELAH TOMBOL DIKLIK)
+        function startCelebration() {
+            // 1. Sembunyikan Overlay
+            document.getElementById('overlay').classList.add('fade-out');
+            
+            // 2. Tampilkan Konten Utama
+            const main = document.getElementById('mainContent');
+            main.style.display = 'flex'; // Ubah dari none ke flex
+            
+            // Beri delay sedikit agar animasi kartu muncul sinkron dengan fade-out overlay
+            setTimeout(() => {
+                main.classList.add('show');
+                // Mulai efek ngetik setelah kartu muncul sempurna
+                setTimeout(typeWriter, 1000);
+            }, 100);
+        }
+
+        // KONFIGURASI EFEK MENGETIK
+        const text = "Halo Yehezkiel, selamat ulang tahun yah! Makasih udah jadi bagian dari perjalanan sejauh ini. Semoga sehat selalu, panjang umur, dan semua impian Kiel kecapai! Semangat berjuang ya yel demi masa depan yang cerah.";
+        let i = 0;
+        function typeWriter() {
+            if (i < text.length) {
+                document.getElementById("typewriter").innerHTML += text.charAt(i);
+                i++;
+                // Kecepatan ngetik (ms per huruf), 45ms = santai tapi lancar
+                setTimeout(typeWriter, 45); 
+            }
+        }
+
+        // KONFIGURASI PARTIKEL JARING-JARING (CONSTELLATION)
+        particlesJS("particles-js", {
+            "particles": {
+                // Jumlah titik (naikkan sedikit agar jaringnya kelihatan rame)
+                "number": { "value": 80, "density": { "enable": true, "value_area": 800 } },
+                "color": { "value": "#ffffff" },
+                "shape": { "type": "circle" },
+                // Opacity rendah agar minimalis
+                "opacity": { "value": 0.25, "random": false, "anim": { "enable": false } },
+                // Ukuran kecil & random
+                "size": { "value": 3, "random": true, "anim": { "enable": false } },
+                
+                // --- INI BAGIAN GARISNYA ---
+                "line_linked": {
+                    "enable": true,
+                    "distance": 160, // Jarak antar garis
+                    "color": "#ffffff",
+                    "opacity": 0.2, // Garis tipis biar elegan
+                    "width": 1
+                },
+                
+                // Gerakan sedang & konstan
+                "move": { "enable": true, "speed": 1.5, "direction": "none", "random": false, "straight": false, "out_mode": "out", "bounce": false }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": { "enable": true, "mode": "grab" }, // Garis narik ke kursor
+                    "onclick": { "enable": true, "mode": "push" },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": { "distance": 180, "line_linked": { "opacity": 0.4 } },
+                    "push": { "particles_nb": 4 }
+                }
+            },
+            "retina_detect": true
+        });
+    </script>
 </body>
 </html>
